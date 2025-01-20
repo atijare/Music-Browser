@@ -93,9 +93,6 @@ The **Music Browser Project** is a graphical application built with Python using
 - Include error messages or status updates for user actions.
 - Implement a play button to integrate music playback (requires additional libraries).
 
-## License
-This project is distributed under the MIT License. See the LICENSE file for more details.
-
 ---
 Enjoy exploring your music collection with the Music Browser!
 
