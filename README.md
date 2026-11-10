@@ -1,98 +1,41 @@
-# Music Browser Project
+# Music Browser
 
-## Overview
-The **Music Browser Project** is a graphical application built with Python using the `tkinter` library for its graphical user interface (GUI). It connects to a SQLite database (`music.sqlite`) to display hierarchical data about artists, albums, and songs. The application allows users to explore music data by selecting an artist to view their albums and subsequently selecting an album to view its songs.
+A Python desktop music catalog with artist → album → song browsing and YouTube search. Built with Tkinter and SQLite; no third-party Python packages or API keys are needed.
 
-## Features
-1. **Dynamic Data Loading**:
-   - The application uses `DataListBox` widgets to dynamically query and display data from the SQLite database.
-   - Selecting an artist filters and displays only their albums.
-   - Selecting an album filters and displays only its songs.
+## Run
 
-2. **Hierarchical Navigation**:
-   - Linked listboxes enable smooth navigation from artists to albums and from albums to songs.
+Use Python 3.12 with Tkinter available (`python3 -m tkinter` opens a test window).
+Keep `music.sqlite` beside `jukebox.py`, then run:
 
-3. **Custom Scrollbox**:
-   - A custom `Scrollbox` class extends `tkinter.Listbox` to add a vertical scrollbar, enhancing usability.
+```bash
+python3 jukebox.py
+```
 
-4. **Resizable GUI**:
-   - The interface dynamically adjusts its layout to fit different screen sizes.
+The database is located relative to the script, so launching from another directory also works.
 
-## Application Components
-### 1. **Scrollbox Class**
-- Enhances the default `tkinter.Listbox` by adding a vertical scrollbar.
-- Methods:
-  - `__init__`: Initializes the listbox with a scrollbar.
-  - `grid`: Handles grid placement of both the listbox and its scrollbar.
+## Listen on YouTube
 
-### 2. **DataListBox Class**
-- Extends `Scrollbox` to add database interaction capabilities.
-- Key Features:
-  - Executes SQL queries to populate the listbox.
-  - Dynamically updates linked listboxes when a selection is made.
-  - Handles hierarchical navigation (artists → albums → songs).
+1. Search for or select an artist.
+2. Select an album.
+3. Click a song to open YouTube search results for its artist and title in your default browser.
+4. Choose a video on YouTube to play it. Use YouTube's playback and volume controls.
 
-### 3. **Main Application Window**
-- Layout:
-  - **Artists Listbox**: Displays a list of artists.
-  - **Albums Listbox**: Displays albums filtered by the selected artist.
-  - **Songs Listbox**: Displays songs filtered by the selected album.
-- Configurations:
-  - Resizable columns and rows.
-  - Scrollable data fields.
+**Open on YouTube ↗** reopens the selected search. **Copy search link** copies the URL if you prefer another browser or the browser cannot open automatically.
 
-## Database Structure
-- **Artists Table**:
-  - `name`: Name of the artist.
-  - `_id`: Unique identifier.
-- **Albums Table**:
-  - `name`: Name of the album.
-  - `artist`: Foreign key linking to the `artists` table.
-  - `_id`: Unique identifier.
-- **Songs Table**:
-  - `title`: Title of the song.
-  - `album`: Foreign key linking to the `albums` table.
-  - `track`: Track number.
-  - `_id`: Unique identifier.
+Opening search results does not automatically select or play a video. This version does not resolve video IDs or embed a YouTube player. It requires internet access and a browser; no local music files are needed.
 
-## How It Works
-1. **Startup**:
-   - Connects to the `music.sqlite` database.
-   - Initializes the main window with three listboxes (Artists, Albums, Songs).
+The app keeps the three browsing panels, artist search, breadcrumbs, counts, track numbers, and keyboard navigation. Changing the artist or album clears the song selection. It does not control existing YouTube tabs.
 
-2. **Data Loading**:
-   - On startup, the `Artists` listbox is populated with all artists from the database.
-   - Selecting an artist queries and populates the `Albums` listbox with the corresponding albums.
-   - Selecting an album queries and populates the `Songs` listbox with the corresponding songs.
+## Storage
 
-3. **Event Binding**:
-   - The `<<ListboxSelect>>` event is used to detect selections and trigger updates in linked listboxes.
+The bundled database contains metadata for 201 artists, 439 albums, and 5,350 songs. The app reads the existing `artists`, `albums`, and `songs` tables without changing the catalog. Records are selected by ID, keeping duplicate names separate.
 
-## Error Handling
-- Prevents crashes when no item is selected by checking for empty selections in the `on_select` method.
+If you tried the earlier local-file playback version, any existing `song_media` table is left intact but is no longer used. Pygame is no longer required.
 
-## Prerequisites
-- Python 3.12 or later.
-- SQLite database (`music.sqlite`) with appropriate tables and data.
+## Checks
 
-## How to Run
-1. Ensure you have Python installed.
-2. Place the `music.sqlite` database in the same directory as the script.
-3. Run the script:
-   ```bash
-   python jukebox.py
-   ```
-4. Use the GUI to browse artists, albums, and songs.
+```bash
+python3 -m unittest discover -s tests -v
+```
 
-## Customization
-- Modify the database queries in the `DataListBox` class to customize data sorting or filtering.
-- Adjust the layout by modifying the `grid` configuration for the widgets.
-
-## Future Improvements
-- Add search functionality for artists, albums, and songs.
-- Include error messages or status updates for user actions.
-- Implement a play button to integrate music playback (requires additional libraries).
-
----
-Enjoy exploring your music collection with the Music Browser!
-
+Tests check hierarchy queries, duplicate titles, track order, literal search, URL encoding, browser invocation, and browser failure handling. Browser calls are mocked so tests do not open tabs.
